@@ -33,10 +33,4 @@ public class SeatController {
         List<SeatDtoOut> seats = seatService.getByFlightId(id);
         return new ResponseEntity<>(seats, HttpStatus.OK);
     }
-
-    // change random amount of seats to not available
-
-    // change all seats to available
-
-    // if plane is added generate all seats for it and every on is availabe
 }
