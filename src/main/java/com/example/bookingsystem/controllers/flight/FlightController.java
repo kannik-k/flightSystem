@@ -2,6 +2,7 @@ package com.example.bookingsystem.controllers.flight;
 
 import com.example.bookingsystem.dto.flight.FlightDtoIn;
 import com.example.bookingsystem.dto.flight.FlightDtoOut;
+import com.example.bookingsystem.responses.flight.FlightPageResponse;
 import com.example.bookingsystem.services.flight.FlightService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -45,9 +46,11 @@ public class FlightController {
             @RequestParam(value = "departureAirport", required = false) String departureAirport,
             @RequestParam(value = "arrivalAirport", required = false) String arrivalAirport,
             @RequestParam(value = "departureTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime departureTime,
-            @RequestParam(value = "price", required = false) Double price
-    ) {
-        List<FlightDtoOut> flightList = flightService.getFlights(flightNumber, departureAirport, arrivalAirport, departureTime, price);
-        return new ResponseEntity<>(flightList, HttpStatus.OK);
+            @RequestParam(value = "price", required = false) Double price,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+            ) {
+        FlightPageResponse flightList = flightService.getFlights(flightNumber, departureAirport, arrivalAirport, departureTime, price, page, size);
+        return new ResponseEntity<>(flightList.getFlights(), HttpStatus.OK);
     }
 }
