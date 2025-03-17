@@ -5,7 +5,14 @@ import com.example.bookingsystem.dto.flight.FlightDtoOut;
 import com.example.bookingsystem.entities.flight.FlightEntity;
 import com.example.bookingsystem.mappers.flight.FlightMapper;
 import com.example.bookingsystem.repositories.flight.FlightRepository;
+import com.example.bookingsystem.responses.flight.FlightPageResponse;
+import com.example.bookingsystem.specifications.flight.FlightSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,17 +26,24 @@ public class FlightService {
 
     public FlightDtoOut addFlight(FlightDtoIn flightDtoIn) {
         FlightEntity flightEntity = flightMapper.toEntity(flightDtoIn);
-        System.out.printf("flight entity: %s\n", flightEntity.getFlightNumber());
         flightRepository.save(flightEntity);
         FlightDtoOut flightDtoOut = flightMapper.toDto(flightEntity);
-        System.out.printf("Flight added: %s\n", flightDtoOut);
         return flightDtoOut;
     }
 
-    // will be changed later
-    public List<FlightDtoOut> getFlights(String flightNumber, String departureAirport, String arrivalAirport,
-                                         LocalDateTime departureTime, LocalDateTime arrivalTime, Double price) {
-        List<FlightEntity> flights = flightRepository.findAll();
-        return flightMapper.toDtoList(flights);
+    public FlightPageResponse getFlights(String flightNumber, String departureAirport, String arrivalAirport,
+                                         LocalDateTime departureTime, Double price, int page, int size) {
+        Specification<FlightEntity> specification = Specification
+                .where(FlightSpecification.getByFlightNumber(flightNumber))
+                .and(FlightSpecification.getByDepartureAirport(departureAirport))
+                .and(FlightSpecification.getByArrivalAirport(arrivalAirport))
+                .and(FlightSpecification.getByDepartureTime(departureTime))
+                .and(FlightSpecification.getByPrice(price));
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "departureTime"));
+        Slice<FlightEntity> slice = flightRepository.findAll(specification, pageable);
+        boolean isLastPage = slice.isLast();
+        List<FlightDtoOut> list = flightMapper.toDtoList(slice.getContent());
+        return new FlightPageResponse(list, !isLastPage);
     }
 }
