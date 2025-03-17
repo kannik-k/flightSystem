@@ -8,6 +8,9 @@ import com.example.bookingsystem.repositories.flight.FlightRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class FlightService {
@@ -21,5 +24,12 @@ public class FlightService {
         FlightDtoOut flightDtoOut = flightMapper.toDto(flightEntity);
         System.out.printf("Flight added: %s\n", flightDtoOut);
         return flightDtoOut;
+    }
+
+    // will be changed later
+    public List<FlightDtoOut> getFlights(String flightNumber, String departureAirport, String arrivalAirport,
+                                         LocalDateTime departureTime, LocalDateTime arrivalTime, Double price) {
+        List<FlightEntity> flights = flightRepository.findAll();
+        return flightMapper.toDtoList(flights);
     }
 }
