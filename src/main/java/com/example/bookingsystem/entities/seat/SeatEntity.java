@@ -13,7 +13,7 @@ public class SeatEntity {
     private Long seatId;
     @Column
     private Long flightId;
-    @Column
+    @Column(name = "seat_num")
     private String seatNumber;
     @Column
     private String classType;
