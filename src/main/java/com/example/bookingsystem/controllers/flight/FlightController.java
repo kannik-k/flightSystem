@@ -33,16 +33,21 @@ public class FlightController {
         return new ResponseEntity<>(flight, HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Retrieves a list of flights from database based on given arguments.",
+            description = "Retrieves flights by flight number, departure airport, arrival airport, departure time " +
+                    "and price. Returns all flights (10 per page) if no filters are applied."
+    )
+    @ApiResponse(responseCode = "200", description = "List of suitable flights has been retrieved successfully.")
     @GetMapping()
     public ResponseEntity<List<FlightDtoOut>> getFlight(
             @RequestParam(value = "flightNumber", required = false) String flightNumber,
             @RequestParam(value = "departureAirport", required = false) String departureAirport,
             @RequestParam(value = "arrivalAirport", required = false) String arrivalAirport,
             @RequestParam(value = "departureTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime departureTime,
-            @RequestParam(value = "arrivalTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime arrivalTime,
             @RequestParam(value = "price", required = false) Double price
     ) {
-        List<FlightDtoOut> flightList = flightService.getFlights(flightNumber, departureAirport, arrivalAirport, departureTime, arrivalTime, price);
+        List<FlightDtoOut> flightList = flightService.getFlights(flightNumber, departureAirport, arrivalAirport, departureTime, price);
         return new ResponseEntity<>(flightList, HttpStatus.OK);
     }
 }

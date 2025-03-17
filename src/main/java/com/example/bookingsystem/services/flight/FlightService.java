@@ -28,7 +28,7 @@ public class FlightService {
 
     // will be changed later
     public List<FlightDtoOut> getFlights(String flightNumber, String departureAirport, String arrivalAirport,
-                                         LocalDateTime departureTime, LocalDateTime arrivalTime, Double price) {
+                                         LocalDateTime departureTime, Double price) {
         List<FlightEntity> flights = flightRepository.findAll();
         return flightMapper.toDtoList(flights);
     }
