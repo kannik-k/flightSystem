@@ -6,4 +6,12 @@ The backend is fully documented with Swagger. To view the API documentation, ens
 ## Original database shcema
 ![image](https://github.com/user-attachments/assets/348ffc8e-882a-4d7b-bacf-44b968ed24ef)
 
-### Rules for simplyfing seat booking
+## Rules for simplyfing seat booking
+To simplify seat allocation and planning, I will make some general assumptions.
+1. Each plane has 33 rows.
+2. Each row contains 6 seats (3 on the left and 3 on the right).
+3. The first 4 rows are first class and have more legroom.
+4. Rows 5 to 7 are business class and also have more legroom.
+5. Row 14 has emergency exit doors and provides more legroom.
+6. The first 5 rows and the last 5 rows are considered close to the exit.
+7. Booked seats are random and are generated every time a client selects a flight. 
