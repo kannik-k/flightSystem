@@ -10,4 +10,35 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
         http://www.liquibase.org/xml/ns/pro
         http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+    
+    <changeSet id="17-03-2025 Add flight table" author="Karoliina Kannik">
+        <createTable tableName="flight">
+            <column name="flight_id" type="serial" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="flight_number" type="varchar"/>
+            <column name="departure_airport" type="varchar"/>
+            <column name="arrival_airport" type="varchar"/>
+            <column name="departure_time" type="datetime"/>
+            <column name="arrival_time" type="datetime"/>
+            <column name="price" type="double"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="17-03-2025 Add seat table" author="Karoliina Kannik">
+        <createTable tableName="seat">
+            <column name="seat_id" type="serial">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="flight_id" type="serial">
+                <constraints nullable="false" foreignKeyName="flight_id" referencedTableName="flight" referencedColumnNames="flight_id"/>
+            </column>
+            <column name="seat_num" type="varchar(10)"/>
+            <column name="class_type" type="varchar(50)"/>
+            <column name="is_near_exit" type="boolean" defaultValue="false"/>
+            <column name="has_extra_legroom" type="boolean" defaultValue="false"/>
+            <column name="is_reserved" type="boolean" defaultValue="false"/>
+        </createTable>
+
+    </changeSet>
 </databaseChangeLog>
