@@ -14,4 +14,7 @@ To simplify seat allocation and planning, I will make some general assumptions.
 4. Rows 5 to 7 are business class and also have more legroom.
 5. Row 14 has emergency exit doors and provides more legroom.
 6. The first 5 rows and the last 5 rows are considered close to the exit.
-7. Booked seats are random and are generated every time a client selects a flight. 
+7. First Class is priced at 1.5 times the base fare.
+8. Business Class is priced at 1.2 times the base fare.
+9. Economy Class is the base fare
+10. Booked seats are random and are generated every time a client selects a flight.

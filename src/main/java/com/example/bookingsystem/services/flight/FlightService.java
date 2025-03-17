@@ -6,6 +6,7 @@ import com.example.bookingsystem.entities.flight.FlightEntity;
 import com.example.bookingsystem.mappers.flight.FlightMapper;
 import com.example.bookingsystem.repositories.flight.FlightRepository;
 import com.example.bookingsystem.responses.flight.FlightPageResponse;
+import com.example.bookingsystem.services.seat.SeatService;
 import com.example.bookingsystem.specifications.flight.FlightSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -23,12 +24,18 @@ import java.util.List;
 public class FlightService {
     private final FlightRepository flightRepository;
     private final FlightMapper flightMapper;
+    private final SeatService seatService;
 
     public FlightDtoOut addFlight(FlightDtoIn flightDtoIn) {
         FlightEntity flightEntity = flightMapper.toEntity(flightDtoIn);
         flightRepository.save(flightEntity);
-        FlightDtoOut flightDtoOut = flightMapper.toDto(flightEntity);
-        return flightDtoOut;
+        seatService.generateSeats(flightEntity.getFlightId());
+        return flightMapper.toDto(flightEntity);
+    }
+
+    public FlightDtoOut getFlightById(Long flightId) {
+        FlightEntity flightEntity = flightRepository.findById(flightId).orElse(null);
+        return flightMapper.toDto(flightEntity);
     }
 
     public FlightPageResponse getFlights(String flightNumber, String departureAirport, String arrivalAirport,

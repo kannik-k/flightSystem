@@ -53,4 +53,15 @@ public class FlightController {
         FlightPageResponse flightList = flightService.getFlights(flightNumber, departureAirport, arrivalAirport, departureTime, price, page, size);
         return new ResponseEntity<>(flightList.getFlights(), HttpStatus.OK);
     }
+
+    @Operation(
+            summary = "Get flight from database based on flight id.",
+            description = "Retrieves a flight from database based on its id."
+    )
+    @ApiResponse(responseCode = "200", description = "Flight has been retrieved from database successfully.")
+    @GetMapping("{id}")
+    public ResponseEntity<FlightDtoOut> getFlightById(@PathVariable("id") long id) {
+        FlightDtoOut flight = flightService.getFlightById(id);
+        return new ResponseEntity<>(flight, HttpStatus.OK);
+    }
 }
