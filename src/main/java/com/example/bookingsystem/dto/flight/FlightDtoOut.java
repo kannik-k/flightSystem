@@ -6,8 +6,8 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@Builder
 @Data
+@Builder
 @Schema(description = "Data transfer object for flight. Server sends to client.")
 public class FlightDtoOut {
     private long flightId;

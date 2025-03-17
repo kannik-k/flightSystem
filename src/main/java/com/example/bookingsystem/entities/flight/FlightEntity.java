@@ -12,17 +12,17 @@ import java.time.LocalDateTime;
 public class FlightEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long flight_id;
+    private Long flightId;
     @Column
-    private String flight_number;
+    private String flightNumber;
     @Column
-    private String departure_airport;
+    private String departureAirport;
     @Column
-    private String arrival_airport;
+    private String arrivalAirport;
     @Column
-    private LocalDateTime departure_time;
+    private LocalDateTime departureTime;
     @Column
-    private LocalDateTime arrival_time;
+    private LocalDateTime arrivalTime;
     @Column
     private Double price;
 }

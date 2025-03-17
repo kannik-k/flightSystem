@@ -16,6 +16,7 @@ public class FlightService {
 
     public FlightDtoOut addFlight(FlightDtoIn flightDtoIn) {
         FlightEntity flightEntity = flightMapper.toEntity(flightDtoIn);
+        System.out.printf("flight entity: %s\n", flightEntity.getFlightNumber());
         flightRepository.save(flightEntity);
         FlightDtoOut flightDtoOut = flightMapper.toDto(flightEntity);
         System.out.printf("Flight added: %s\n", flightDtoOut);
