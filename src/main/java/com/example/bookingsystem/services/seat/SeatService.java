@@ -8,9 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -18,7 +16,7 @@ public class SeatService {
     private final SeatRepository seatRepository;
     private final SeatMapper seatMapper;
     private final List<String> seatLetters = Arrays.asList("A", "B", "C", "D", "E", "F");
-    
+
     public void generateSeats(Long flightId) {
         List<SeatEntity> seats = new ArrayList<>();
         for (int row = 1; row <= 33; row++) {
@@ -55,6 +53,31 @@ public class SeatService {
         }
 
         seatRepository.saveAll(seats);
+    }
+
+    public List<SeatDtoOut> randomSeatsBooked(Long flightId) {
+        List<SeatEntity> seats = seatRepository.findAllByFlightId(flightId);
+        Random random = new Random();
+        double randomPercentage = 0.1 + (0.5 * random.nextDouble()); // 0.1 kuni 0.6 vahemik
+
+        int seatsToBook = (int) (seats.size() * randomPercentage);
+
+        Collections.shuffle(seats);
+
+        for (int i = 0; i < seatsToBook; i++) {
+            seats.get(i).setIsReserved(true);
+        }
+        for (int i = seatsToBook; i < seats.size(); i++) {
+            seats.get(i).setIsReserved(false);
+        }
+
+        return seatMapper.toDtoList(seats);
+    }
+
+    public List<SeatDtoOut> allSeatsFree(Long flightId) {
+        List<SeatEntity> seats = seatRepository.findAllByFlightId(flightId);
+        seats.forEach(seat -> {seat.setIsReserved(false);});
+        return seatMapper.toDtoList(seats);
     }
 
     public List<SeatDtoOut> getByFlightId(Long flightId) throws ChangeSetPersister.NotFoundException {
