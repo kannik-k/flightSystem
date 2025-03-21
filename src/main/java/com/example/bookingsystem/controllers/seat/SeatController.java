@@ -8,15 +8,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RequiredArgsConstructor
-@RequestMapping("api")
+@RequestMapping("api/seats")
 @RestController
 @Tag(name = "Seat", description = "API for managing seats.")
 public class SeatController {
@@ -25,12 +22,61 @@ public class SeatController {
 
     @Operation(
             summary = "Get flights seats",
-            description = "Get plane seats by plane id"
+            description = "Get suitable plane seats by plane id and given parameters."
     )
     @ApiResponse(responseCode = "200", description = "Planes seats have been retrieved from database successfully.")
-    @GetMapping("seats/{id}")
-    public ResponseEntity<List<SeatDtoOut>> getSeatByFlightId(@PathVariable Long id) throws Exception {
+    @GetMapping("select/{id}")
+    public ResponseEntity<List<SeatDtoOut>> getSeatByFlightId(
+            @PathVariable Long id,
+            @RequestParam(value = "classType", required = false) String classType,
+            @RequestParam(value = "isNearExit", required = false) Boolean isNearExit,
+            @RequestParam(value = "hasExtraLegroom", required = false) Boolean hasExtraLegRoom,
+            @RequestParam(defaultValue = "1") int seatNums) throws IllegalArgumentException {
+        List<SeatDtoOut> seats = seatService.getAllByFlightId(id, classType, isNearExit, hasExtraLegRoom, seatNums);
+        return new ResponseEntity<>(seats, HttpStatus.OK);
+    }
+
+    @Operation(
+            summary = "Get flights seats",
+            description = "Get all plane seats by plane id"
+    )
+    @ApiResponse(responseCode = "200", description = "Plane seats have been retrieved from database successfully.")
+    @GetMapping("{id}")
+    public ResponseEntity<List<SeatDtoOut>> getAllFlightSeat(@PathVariable Long id) throws Exception {
         List<SeatDtoOut> seats = seatService.getByFlightId(id);
+        return new ResponseEntity<>(seats, HttpStatus.OK);
+    }
+
+    @Operation(
+            summary = "Get reserved seats",
+            description = "Get all randomly generated reserved seats by plane id."
+    )
+    @ApiResponse(responseCode = "200", description = "Planes seats that are randomly generated have been retrieved from database successfully.")
+    @GetMapping("reserved/{id}")
+    public ResponseEntity<List<SeatDtoOut>> getReservedSeats(@PathVariable Long id) throws Exception {
+        List<SeatDtoOut> seats = seatService.randomSeatsBooked(id);
+        return new ResponseEntity<>(seats, HttpStatus.OK);
+    }
+
+    @Operation(
+            summary = "Get all available seats",
+            description = "Get all available seats on plane using plane id."
+    )
+    @ApiResponse(responseCode = "200", description = "Plane seats that are available have been retrieved from database successfully.")
+    @GetMapping("available/{id}")
+    public ResponseEntity<List<SeatDtoOut>> getFreeSeats(@PathVariable Long id) throws Exception {
+        List<SeatDtoOut> seats = seatService.getFreeSeats(id);
+        return new ResponseEntity<>(seats, HttpStatus.OK);
+    }
+
+    @Operation(
+            summary = "Reset all seats",
+            description = "Resets all seats to available on specific plane."
+    )
+    @ApiResponse(responseCode = "200", description = "Plane seats are all reseat to available and have been retrieved from database successfully")
+    @GetMapping("reset/{id}")
+    public ResponseEntity<List<SeatDtoOut>> resetSeatAvailability (@PathVariable Long id) throws Exception {
+        List<SeatDtoOut> seats = seatService.resetSeatAvailability(id);
         return new ResponseEntity<>(seats, HttpStatus.OK);
     }
 }

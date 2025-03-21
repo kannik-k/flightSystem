@@ -26,58 +26,75 @@ public class SeatService {
                 seatEntity.setFlightId(flightId);
 
                 // Should be replaced by enum
-                if (row >= 1 && row <= 4) {
-                    seatEntity.setClassType("first class");
-                } else if (row >= 5 && row <= 7) {
-                    seatEntity.setClassType("business class");
+                if (row <= 4) {
+                    seatEntity.setClassType("first");
+                } else if (row <= 7) {
+                    seatEntity.setClassType("business");
                 } else {
-                    seatEntity.setClassType("economy class");
+                    seatEntity.setClassType("economy");
                 }
 
-                if (row == 14 || row <= 4 || (row >= 5 && row <= 7)) {
-                    seatEntity.setHasExtraLegroom(true);
-                } else {
-                    seatEntity.setHasExtraLegroom(false);
-                }
+                seatEntity.setHasExtraLegroom(row == 14 || row <= 4 || (row >= 5 && row <= 7));
 
-                if (row <= 5 || row >= 29) {
-                    seatEntity.setIsNearExit(true);
-                } else {
-                    seatEntity.setIsNearExit(false);
-                }
+                seatEntity.setIsNearExit(row <= 5 || row >= 29);
 
                 seatEntity.setIsReserved(false);
-
                 seats.add(seatEntity);
             }
         }
-
         seatRepository.saveAll(seats);
     }
 
     public List<SeatDtoOut> randomSeatsBooked(Long flightId) {
         List<SeatEntity> seats = seatRepository.findAllByFlightId(flightId);
+
+        if (seats.isEmpty()) {
+            throw new IllegalStateException("No seats found for flight ID: " + flightId);
+        }
+
         Random random = new Random();
-        double randomPercentage = 0.1 + (0.5 * random.nextDouble()); // 0.1 kuni 0.6 vahemik
-
+        double randomPercentage = 0.1 + (0.5 * random.nextDouble());
         int seatsToBook = (int) (seats.size() * randomPercentage);
-
         Collections.shuffle(seats);
 
         for (int i = 0; i < seatsToBook; i++) {
             seats.get(i).setIsReserved(true);
         }
+
         for (int i = seatsToBook; i < seats.size(); i++) {
             seats.get(i).setIsReserved(false);
         }
 
-        return seatMapper.toDtoList(seats);
+        seatRepository.saveAll(seats);
+
+        List<SeatDtoOut> reservedSeats = seatMapper.toDtoList(seats.stream()
+                .filter(SeatEntity::getIsReserved)
+                .toList());
+
+        if (reservedSeats.isEmpty()) {
+            System.out.println("No seats were reserved.");
+        }
+
+        return reservedSeats;
     }
 
-    public List<SeatDtoOut> allSeatsFree(Long flightId) {
+    // search function
+    public List<SeatDtoOut> getAllByFlightId(Long flightId, String classType, Boolean isNearExit,
+                                             Boolean hasExtraLegroom, Integer seatNums) throws IllegalArgumentException {
         List<SeatEntity> seats = seatRepository.findAllByFlightId(flightId);
-        seats.forEach(seat -> {seat.setIsReserved(false);});
-        return seatMapper.toDtoList(seats);
+
+        if (seatNums > 198) {
+            throw new IllegalArgumentException("Number of seats exceeds seats on plain " + flightId);
+        }
+
+        return seats.stream()
+                .filter(seat -> classType == null || seat.getClassType().equalsIgnoreCase(classType))
+                .filter(seat -> isNearExit == null || seat.getIsNearExit().equals(isNearExit))
+                .filter(seat -> hasExtraLegroom == null || seat.getHasExtraLegroom().equals(hasExtraLegroom))
+                .filter(seat -> !seat.getIsReserved())
+                .limit(seatNums)
+                .map(seatMapper::toDto)
+                .toList();
     }
 
     public List<SeatDtoOut> getByFlightId(Long flightId) throws ChangeSetPersister.NotFoundException {
@@ -87,4 +104,19 @@ public class SeatService {
         }
         return seatMapper.toDtoList(seats);
     }
+
+    public List<SeatDtoOut> getFreeSeats(Long id) {
+        return seatRepository.findAllByFlightId(id).stream()
+                .filter(seat -> !seat.getIsReserved())
+                .map(seatMapper::toDto)
+                .toList();
+    }
+
+    public List<SeatDtoOut> resetSeatAvailability(Long id) {
+        List<SeatEntity> seats = seatRepository.findAllByFlightId(id);
+        seats.forEach(seat -> seat.setIsReserved(false));
+        return seatMapper.toDtoList(seats);
+    }
+
+    // this need proper recommends seats function
 }

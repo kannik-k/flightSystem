@@ -6,7 +6,7 @@ import org.springframework.data.jpa.domain.Specification;
 import java.time.LocalDateTime;
 
 public class FlightSpecification {
-    public FlightSpecification() {}
+    private FlightSpecification() {}
 
     public static Specification<FlightEntity> getByFlightNumber(String flightNumber) {
         return ((root, query, criteriaBuilder) ->
