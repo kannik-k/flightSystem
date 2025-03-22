@@ -2,6 +2,9 @@
 
 ## Documentation
 The backend is fully documented with Swagger. To view the API documentation, ensure that the backend application is running, and navigate to http://localhost:8080/swagger-ui.html in your web browser.
+
+## Frontend link
+https://github.com/kannik-k/bookingSystem-frontend.git
   
 ## Original database shcema
 ![image](https://github.com/user-attachments/assets/348ffc8e-882a-4d7b-bacf-44b968ed24ef)
