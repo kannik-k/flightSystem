@@ -26,28 +26,57 @@ public class FlightService {
     private final FlightMapper flightMapper;
     private final SeatService seatService;
 
+    /**
+     * Add plane to database.
+     *
+     * Creates plane object, adds it to the database. It also generates seats  for this plane and assigns random seats
+     * as reserved.
+     */
     public FlightDtoOut addFlight(FlightDtoIn flightDtoIn) {
         FlightEntity flightEntity = flightMapper.toEntity(flightDtoIn);
+        if (flightEntity.getArrivalTime().isBefore(flightEntity.getDepartureTime()) || flightEntity.getArrivalTime().isEqual(flightEntity.getDepartureTime())) {
+            flightEntity.setArrivalTime(flightEntity.getArrivalTime().plusDays(1));
+        }
         flightRepository.save(flightEntity);
         seatService.generateSeats(flightEntity.getFlightId());
+        seatService.randomSeatsBooked(flightEntity.getFlightId());
         return flightMapper.toDto(flightEntity);
     }
 
+    /**
+     * Get flight.
+     *
+     * Returns flight from database based on it's id. Used mainly for testing purposes
+     */
     public FlightDtoOut getFlightById(Long flightId) {
         FlightEntity flightEntity = flightRepository.findById(flightId).orElse(null);
         return flightMapper.toDto(flightEntity);
     }
 
-    public FlightPageResponse getFlights(String flightNumber, String departureAirport, String arrivalAirport,
-                                         LocalDateTime departureTime, Double price, int page, int size) {
-        Specification<FlightEntity> specification = Specification
-                .where(FlightSpecification.getByFlightNumber(flightNumber))
-                .and(FlightSpecification.getByDepartureAirport(departureAirport))
-                .and(FlightSpecification.getByArrivalAirport(arrivalAirport))
-                .and(FlightSpecification.getByDepartureTime(departureTime))
-                .and(FlightSpecification.getByPrice(price));
+    /**
+     * Get flights.
+     *
+     * This method is used to search for flights. Flights can be filtered by departure airport, arrival airport, and
+     * departure date. The departure time is set to 00:00:00 so that all flights departing on that day are included.
+     * Flights with departure dates after the given date are also considered.
+     *
+     * Specifications and pagination are used to prevent the website from crashing when handling large amounts of data.
+     * A Slice is used because it contains an isLast value, which is useful to determine whether
+     * there is more data available for the next page and is used in the frontend.
+     */
+    public FlightPageResponse getFlights(String departureAirport, String arrivalAirport,
+                                         LocalDateTime departureTime, int page, int size) {
+        if (departureTime != null) {
+            departureTime = departureTime.toLocalDate().atStartOfDay();
+        }
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "departureTime"));
+        Specification<FlightEntity> specification = Specification
+                .where((FlightSpecification.getByDepartureAirport(departureAirport))
+                .and(FlightSpecification.getByArrivalAirport(arrivalAirport))
+                .and(FlightSpecification.getByDepartureTime(departureTime)));
+
+        Pageable pageable = PageRequest.of(page, size,
+                Sort.by(Sort.Order.desc("departureTime").ignoreCase(), Sort.Order.asc("departureTime").ignoreCase()));
         Slice<FlightEntity> slice = flightRepository.findAll(specification, pageable);
         boolean isLastPage = slice.isLast();
         List<FlightDtoOut> list = flightMapper.toDtoList(slice.getContent());

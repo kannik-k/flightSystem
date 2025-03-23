@@ -14,10 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RequiredArgsConstructor
-@RequestMapping("api")
+@RequestMapping("api/flights")
 @RestController
 @Tag(name = "Flights", description = "API for managing Flights.")
 public class FlightController {
@@ -25,10 +24,10 @@ public class FlightController {
 
     @Operation(
             summary = "Add new flight to database.",
-            description = "Creates a new flight object based on given values."
+            description = "Creates a new flight object based on given values. Seats are generated and randomly assigned as reserved."
     )
     @ApiResponse(responseCode = "200", description = "Flight has been added to the database successfully.")
-    @PostMapping("flights/add")
+    @PostMapping("/add")
     public ResponseEntity<FlightDtoOut> addFlight(@RequestBody FlightDtoIn flightDtoIn) {
         FlightDtoOut flight = flightService.addFlight(flightDtoIn);
         return new ResponseEntity<>(flight, HttpStatus.OK);
@@ -36,27 +35,28 @@ public class FlightController {
 
     @Operation(
             summary = "Retrieves a list of flights from database based on given arguments.",
-            description = "Retrieves flights by flight number, departure airport, arrival airport, departure time " +
-                    "and price. Returns all flights (10 per page) if no filters are applied."
+            description = "Retrieves flights by departure airport, arrival airport, departure time" +
+                    ". Returns all flights (10 per page) if no filters are applied. It uses specification and pagination" +
+                    " so that if there should be large amount of objects, the website won't crash. Slice is used because it has" +
+                    " isLast value, which will be used in frontend to see data on other pages. It makes it possible to see next and previous pages." +
+                    " This function is called when plane is created."
     )
     @ApiResponse(responseCode = "200", description = "List of suitable flights has been retrieved successfully.")
     @GetMapping()
-    public ResponseEntity<List<FlightDtoOut>> getFlight(
-            @RequestParam(value = "flightNumber", required = false) String flightNumber,
+    public ResponseEntity<FlightPageResponse> getFlight(
             @RequestParam(value = "departureAirport", required = false) String departureAirport,
             @RequestParam(value = "arrivalAirport", required = false) String arrivalAirport,
             @RequestParam(value = "departureTime", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime departureTime,
-            @RequestParam(value = "price", required = false) Double price,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
             ) {
-        FlightPageResponse flightList = flightService.getFlights(flightNumber, departureAirport, arrivalAirport, departureTime, price, page, size);
-        return new ResponseEntity<>(flightList.getFlights(), HttpStatus.OK);
+        FlightPageResponse flightList = flightService.getFlights(departureAirport, arrivalAirport, departureTime, page, size);
+        return new ResponseEntity<>(flightList, HttpStatus.OK);
     }
 
     @Operation(
             summary = "Get flight from database based on flight id.",
-            description = "Retrieves a flight from database based on its id."
+            description = "Retrieves a flight from database based on its id. Used for testing"
     )
     @ApiResponse(responseCode = "200", description = "Flight has been retrieved from database successfully.")
     @GetMapping("{id}")
