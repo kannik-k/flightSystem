@@ -24,7 +24,7 @@ public class FlightController {
 
     @Operation(
             summary = "Add new flight to database.",
-            description = "Creates a new flight object based on given values."
+            description = "Creates a new flight object based on given values. Seats are generated and randomly assigned as reserved."
     )
     @ApiResponse(responseCode = "200", description = "Flight has been added to the database successfully.")
     @PostMapping("/add")
@@ -36,7 +36,10 @@ public class FlightController {
     @Operation(
             summary = "Retrieves a list of flights from database based on given arguments.",
             description = "Retrieves flights by departure airport, arrival airport, departure time" +
-                    ". Returns all flights (10 per page) if no filters are applied."
+                    ". Returns all flights (10 per page) if no filters are applied. It uses specification and pagination" +
+                    " so that if there should be large amount of objects, the website won't crash. Slice is used because it has" +
+                    " isLast value, which will be used in frontend to see data on other pages. It makes it possible to see next and previous pages." +
+                    " This function is called when plane is created."
     )
     @ApiResponse(responseCode = "200", description = "List of suitable flights has been retrieved successfully.")
     @GetMapping()

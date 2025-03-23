@@ -53,7 +53,8 @@ public class FlightService {
                 .and(FlightSpecification.getByArrivalAirport(arrivalAirport))
                 .and(FlightSpecification.getByDepartureTime(departureTime)));
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "departureTime"));
+        Pageable pageable = PageRequest.of(page, size,
+                Sort.by(Sort.Order.desc("departureTime").ignoreCase(), Sort.Order.asc("departureTime").ignoreCase()));
         Slice<FlightEntity> slice = flightRepository.findAll(specification, pageable);
         boolean isLastPage = slice.isLast();
         List<FlightDtoOut> list = flightMapper.toDtoList(slice.getContent());

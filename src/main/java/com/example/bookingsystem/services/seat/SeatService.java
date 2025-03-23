@@ -74,10 +74,19 @@ public class SeatService {
 
     // search function
     public List<SeatDtoOut> getAllByFlightId(Long flightId, String classType, Boolean isNearExit,
-                                             Boolean hasExtraLegroom, Integer seatNums) throws IllegalArgumentException {
+                                             Boolean hasExtraLegroom, Integer seatNums, Boolean windowSeat, Boolean seatsTogether) throws IllegalArgumentException {
         if (seatNums > 198) {
             throw new IllegalArgumentException("Number of seats exceeds seats on plane " + flightId);
         }
+        System.out.println("Päringu parameetrid: ");
+        System.out.println("Flight ID: " + flightId);
+        System.out.println("ClassType: " + classType);
+        System.out.println("Near Exit: " + isNearExit);
+        System.out.println("Extra Legroom: " + hasExtraLegroom);
+        System.out.println("Seat Number: " + seatNums);
+        System.out.println("Window Seat: " + windowSeat);
+        System.out.println("Seats Together: " + seatsTogether);
+
 
         Specification<SeatEntity> spec = Specification.where(SeatSpecification.getByFlightId(flightId)
                 .and(SeatSpecification.getByClassType(classType))
@@ -86,6 +95,15 @@ public class SeatService {
                 .and(SeatSpecification.getByIsReserved(false)));
 
         List<SeatEntity> seats = seatRepository.findAll(spec);
+
+        // get window seats logic is if seats are togeher, find first window seat. it might be better to do another function
+        //but anyways. if seats are together i need first a or f seat. max 6 seats is possible and 3 seats can be togheter so
+        // võimalused on 2 3 rows and one of them is window seats (for exampel 1a 1b 1c and 1d 1e 1f since 1a and 1f are window seats)
+        // or 3 times pairs ( for exxample 1a 1b, 2a 2b, 3a 3b). if its only seats together then the same logic applyes exept
+        // wondow seat does not have to be in a group
+        //
+
+        // if seats are not together i need as many a and f seats as i can get from spec
 
         return seats.stream().limit(seatNums).map(seatMapper::toDto).toList();
     }
@@ -104,12 +122,4 @@ public class SeatService {
                 .map(seatMapper::toDto)
                 .toList();
     }
-
-    public List<SeatDtoOut> resetSeatAvailability(Long id) {
-        List<SeatEntity> seats = seatRepository.findAllByFlightId(id);
-        seats.forEach(seat -> seat.setIsReserved(false));
-        return seatMapper.toDtoList(seats);
-    }
-
-    // this need proper recommends seats function
 }
