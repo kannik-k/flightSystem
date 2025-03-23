@@ -56,7 +56,7 @@ public class FlightController {
 
     @Operation(
             summary = "Get flight from database based on flight id.",
-            description = "Retrieves a flight from database based on its id."
+            description = "Retrieves a flight from database based on its id. Used for testing"
     )
     @ApiResponse(responseCode = "200", description = "Flight has been retrieved from database successfully.")
     @GetMapping("{id}")
