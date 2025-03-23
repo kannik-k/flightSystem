@@ -20,4 +20,5 @@ To simplify seat allocation and planning, I will make some general assumptions.
 7. First Class is priced at 1.5 times the base fare.
 8. Business Class is priced at 1.2 times the base fare.
 9. Economy Class is the base fare
-10. Booked seats are random and are generated every time a client selects a flight.
+10. One person can book up to 6 seats
+11. Booked seats are random and are generated every time a client selects a flight.
