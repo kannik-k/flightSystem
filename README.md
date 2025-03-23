@@ -1,5 +1,56 @@
 # Flight System
 
+## Overview 
+This is a web application built with Vue.js and Spring Boot that assists air travelers in planning their flights and provides personalized seat recommendations based on their preferences.
+
+## Set Up
+
+In order to run this project, you need the following tools:
+- JDK 21
+- Docker
+- Docker Compose
+- Node.js
+- Gradle
+
+### Backend
+Clone the repository:
+
+```bash
+git clone <backend-repository-url>
+```
+
+Then run:
+
+```bash
+docker-compose up --build postgres
+```
+
+### Frontend
+Clone the frontend repository:
+
+```bash
+git clone https://github.com/kannik-k/bookingSystem-frontend.git
+```
+
+Project Setup:
+
+```bash
+npm install
+```
+
+For development, run the following command to start the application with hot-reload:
+
+```bash
+npm run dev
+```
+
+For production, compile and minify the application with:
+
+```bash
+npm run build
+```
+
+
 ## Documentation
 The backend is fully documented with Swagger. To view the API documentation, ensure that the backend application is running, and navigate to http://localhost:8080/swagger-ui.html in your web browser.
 
