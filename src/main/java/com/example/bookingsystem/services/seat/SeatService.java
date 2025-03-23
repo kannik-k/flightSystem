@@ -83,7 +83,7 @@ public class SeatService {
                 .and(SeatSpecification.getByClassType(classType))
                 .and(SeatSpecification.getByIsNearExit(isNearExit))
                 .and(SeatSpecification.getByHasExtraLegroom(hasExtraLegroom))
-                );
+                .and(SeatSpecification.getByIsReserved(false)));
 
         List<SeatEntity> seats = seatRepository.findAll(spec);
 
@@ -95,6 +95,11 @@ public class SeatService {
         //
 
         // if seats are not together i need as many a and f seats as i can get from spec
+        if (windowSeat) {
+            seats = seats.stream()
+                    .filter(seat -> seat.getSeatNumber().endsWith("A") || seat.getSeatNumber().endsWith("F"))
+                    .toList();
+        }
 
         return seats.stream().limit(seatNums).map(seatMapper::toDto).toList();
     }
