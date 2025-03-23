@@ -33,18 +33,10 @@ public class SeatController {
             @RequestParam(value = "classType", required = false) String classType,
             @RequestParam(value = "isNearExit", required = false) Boolean isNearExit,
             @RequestParam(value = "hasExtraLegroom", required = false) Boolean hasExtraLegroom,
-            @RequestParam(defaultValue = "1", required = false) int seatNums,
+            @RequestParam(value ="seatNum",defaultValue = "1", required = false) int seatNums,
             @RequestParam(defaultValue = "false", required = false) Boolean windowSeat,
             @RequestParam(defaultValue = "false", required = false) Boolean seatsTogether) throws IllegalArgumentException {
-        System.out.println("Fetching seats for flight ID: " + id);
-        System.out.println("ClassType: " + classType);
-        System.out.println("IsNearExit: " + isNearExit);
-        System.out.println("HasExtraLegroom: " + hasExtraLegroom);
-        System.out.println("SeatNums: " + seatNums);
-        System.out.println("WindowSeat: " + windowSeat);
-        System.out.println("SeatsTogether: " + seatsTogether);
         List<SeatDtoOut> seats = seatService.getAllByFlightId(id, classType, isNearExit, hasExtraLegroom, seatNums, windowSeat, seatsTogether);
-        System.out.println(seats);
         return new ResponseEntity<>(seats, HttpStatus.OK);
     }
 
