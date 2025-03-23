@@ -17,7 +17,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
@@ -42,18 +45,16 @@ public class FlightService {
         return flightMapper.toDto(flightEntity);
     }
 
-    public FlightPageResponse getFlights(String flightNumber, String departureAirport, String arrivalAirport,
-                                         LocalDateTime departureTime, Double price, int page, int size) {
+    public FlightPageResponse getFlights(String departureAirport, String arrivalAirport,
+                                         LocalDateTime departureTime, int page, int size) {
         if (departureTime != null) {
             departureTime = departureTime.toLocalDate().atStartOfDay();
         }
 
         Specification<FlightEntity> specification = Specification
-                .where(FlightSpecification.getByFlightNumber(flightNumber))
-                .and(FlightSpecification.getByDepartureAirport(departureAirport))
+                .where((FlightSpecification.getByDepartureAirport(departureAirport))
                 .and(FlightSpecification.getByArrivalAirport(arrivalAirport))
-                .and(FlightSpecification.getByDepartureTime(departureTime))
-                .and(FlightSpecification.getByPrice(price));
+                .and(FlightSpecification.getByDepartureTime(departureTime)));
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "departureTime"));
         Slice<FlightEntity> slice = flightRepository.findAll(specification, pageable);
