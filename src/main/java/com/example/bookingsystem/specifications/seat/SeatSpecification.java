@@ -4,6 +4,7 @@ import com.example.bookingsystem.entities.seat.SeatEntity;
 import org.springframework.data.jpa.domain.Specification;
 
 public class SeatSpecification {
+    private SeatSpecification() {}
 
     public static Specification<SeatEntity> getByFlightId(Long flightId) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("flightId"), flightId);

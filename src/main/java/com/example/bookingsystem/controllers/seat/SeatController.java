@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,7 +43,7 @@ public class SeatController {
     )
     @ApiResponse(responseCode = "200", description = "Plane seats have been retrieved from database successfully.")
     @GetMapping("{id}")
-    public ResponseEntity<List<SeatDtoOut>> getAllFlightSeat(@PathVariable Long id) throws Exception {
+    public ResponseEntity<List<SeatDtoOut>> getAllFlightSeat(@PathVariable Long id) throws ChangeSetPersister.NotFoundException {
         List<SeatDtoOut> seats = seatService.getByFlightId(id);
         return new ResponseEntity<>(seats, HttpStatus.OK);
     }
@@ -53,7 +54,7 @@ public class SeatController {
     )
     @ApiResponse(responseCode = "200", description = "Planes seats that are randomly generated have been retrieved from database successfully.")
     @GetMapping("reserved/{id}")
-    public ResponseEntity<List<SeatDtoOut>> getReservedSeats(@PathVariable Long id) throws Exception {
+    public ResponseEntity<List<SeatDtoOut>> getReservedSeats(@PathVariable Long id) {
         List<SeatDtoOut> seats = seatService.randomSeatsBooked(id);
         return new ResponseEntity<>(seats, HttpStatus.OK);
     }
@@ -64,7 +65,7 @@ public class SeatController {
     )
     @ApiResponse(responseCode = "200", description = "Plane seats that are available have been retrieved from database successfully.")
     @GetMapping("available/{id}")
-    public ResponseEntity<List<SeatDtoOut>> getFreeSeats(@PathVariable Long id) throws Exception {
+    public ResponseEntity<List<SeatDtoOut>> getFreeSeats(@PathVariable Long id) {
         List<SeatDtoOut> seats = seatService.getFreeSeats(id);
         return new ResponseEntity<>(seats, HttpStatus.OK);
     }
@@ -75,7 +76,7 @@ public class SeatController {
     )
     @ApiResponse(responseCode = "200", description = "Plane seats are all reseat to available and have been retrieved from database successfully")
     @GetMapping("reset/{id}")
-    public ResponseEntity<List<SeatDtoOut>> resetSeatAvailability (@PathVariable Long id) throws Exception {
+    public ResponseEntity<List<SeatDtoOut>> resetSeatAvailability (@PathVariable Long id) {
         List<SeatDtoOut> seats = seatService.resetSeatAvailability(id);
         return new ResponseEntity<>(seats, HttpStatus.OK);
     }

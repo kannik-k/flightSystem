@@ -69,15 +69,7 @@ public class SeatService {
 
         seatRepository.saveAll(seats);
 
-        List<SeatDtoOut> reservedSeats = seatMapper.toDtoList(seats.stream()
-                .filter(SeatEntity::getIsReserved)
-                .toList());
-
-        if (reservedSeats.isEmpty()) {
-            System.out.println("No seats were reserved.");
-        }
-
-        return reservedSeats;
+        return seatMapper.toDtoList(seats.stream().filter(SeatEntity::getIsReserved).toList());
     }
 
     // search function

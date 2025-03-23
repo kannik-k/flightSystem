@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RequiredArgsConstructor
 @RequestMapping("api/flights")
@@ -50,17 +49,6 @@ public class FlightController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
             ) {
-        // LOGGING
-        System.out.println("==== FLIGHT API REQUEST ====");
-        System.out.println("page = " + page);
-        System.out.println("size = " + size);
-        System.out.println("flightNumber = " + flightNumber);
-        System.out.println("departureAirport = " + departureAirport);
-        System.out.println("arrivalAirport = " + arrivalAirport);
-        System.out.println("departureTime = " + departureTime);
-        System.out.println("price = " + price);
-        System.out.println("============================");
-
         FlightPageResponse flightList = flightService.getFlights(flightNumber, departureAirport, arrivalAirport, departureTime, price, page, size);
         return new ResponseEntity<>(flightList, HttpStatus.OK);
     }
