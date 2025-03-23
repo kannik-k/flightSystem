@@ -32,11 +32,11 @@ public class SeatController {
             @PathVariable Long id,
             @RequestParam(value = "classType", required = false) String classType,
             @RequestParam(value = "isNearExit", required = false) Boolean isNearExit,
-            @RequestParam(value = "hasExtraLegroom", required = false) Boolean hasExtraLegRoom,
+            @RequestParam(value = "hasExtraLegroom", required = false) Boolean hasExtraLegroom,
             @RequestParam(defaultValue = "1") int seatNums,
-            @RequestParam(defaultValue = "windowSeat", required = false) Boolean windowSeat,
-            @RequestParam(defaultValue = "seatsTogether", required = false) Boolean seatsTogether) throws IllegalArgumentException {
-        List<SeatDtoOut> seats = seatService.getAllByFlightId(id, classType, isNearExit, hasExtraLegRoom, seatNums, windowSeat, seatsTogether);
+            @RequestParam(defaultValue = "false", required = false) Boolean windowSeat,
+            @RequestParam(defaultValue = "false", required = false) Boolean seatsTogether) throws IllegalArgumentException {
+        List<SeatDtoOut> seats = seatService.getAllByFlightId(id, classType, isNearExit, hasExtraLegroom, seatNums, windowSeat, seatsTogether);
         return new ResponseEntity<>(seats, HttpStatus.OK);
     }
 

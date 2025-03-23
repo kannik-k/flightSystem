@@ -78,21 +78,12 @@ public class SeatService {
         if (seatNums > 198) {
             throw new IllegalArgumentException("Number of seats exceeds seats on plane " + flightId);
         }
-        System.out.println("Päringu parameetrid: ");
-        System.out.println("Flight ID: " + flightId);
-        System.out.println("ClassType: " + classType);
-        System.out.println("Near Exit: " + isNearExit);
-        System.out.println("Extra Legroom: " + hasExtraLegroom);
-        System.out.println("Seat Number: " + seatNums);
-        System.out.println("Window Seat: " + windowSeat);
-        System.out.println("Seats Together: " + seatsTogether);
-
 
         Specification<SeatEntity> spec = Specification.where(SeatSpecification.getByFlightId(flightId)
                 .and(SeatSpecification.getByClassType(classType))
                 .and(SeatSpecification.getByIsNearExit(isNearExit))
                 .and(SeatSpecification.getByHasExtraLegroom(hasExtraLegroom))
-                .and(SeatSpecification.getByIsReserved(false)));
+                );
 
         List<SeatEntity> seats = seatRepository.findAll(spec);
 
