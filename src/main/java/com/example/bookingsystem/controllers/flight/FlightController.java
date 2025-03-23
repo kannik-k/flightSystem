@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
-@RequestMapping("api")
+@RequestMapping("api/flights")
 @RestController
 @Tag(name = "Flights", description = "API for managing Flights.")
 public class FlightController {
@@ -28,7 +28,7 @@ public class FlightController {
             description = "Creates a new flight object based on given values."
     )
     @ApiResponse(responseCode = "200", description = "Flight has been added to the database successfully.")
-    @PostMapping("flights/add")
+    @PostMapping("/add")
     public ResponseEntity<FlightDtoOut> addFlight(@RequestBody FlightDtoIn flightDtoIn) {
         FlightDtoOut flight = flightService.addFlight(flightDtoIn);
         return new ResponseEntity<>(flight, HttpStatus.OK);
@@ -41,7 +41,7 @@ public class FlightController {
     )
     @ApiResponse(responseCode = "200", description = "List of suitable flights has been retrieved successfully.")
     @GetMapping()
-    public ResponseEntity<List<FlightDtoOut>> getFlight(
+    public ResponseEntity<FlightPageResponse> getFlight(
             @RequestParam(value = "flightNumber", required = false) String flightNumber,
             @RequestParam(value = "departureAirport", required = false) String departureAirport,
             @RequestParam(value = "arrivalAirport", required = false) String arrivalAirport,
@@ -50,8 +50,19 @@ public class FlightController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
             ) {
+        // LOGGING
+        System.out.println("==== FLIGHT API REQUEST ====");
+        System.out.println("page = " + page);
+        System.out.println("size = " + size);
+        System.out.println("flightNumber = " + flightNumber);
+        System.out.println("departureAirport = " + departureAirport);
+        System.out.println("arrivalAirport = " + arrivalAirport);
+        System.out.println("departureTime = " + departureTime);
+        System.out.println("price = " + price);
+        System.out.println("============================");
+
         FlightPageResponse flightList = flightService.getFlights(flightNumber, departureAirport, arrivalAirport, departureTime, price, page, size);
-        return new ResponseEntity<>(flightList.getFlights(), HttpStatus.OK);
+        return new ResponseEntity<>(flightList, HttpStatus.OK);
     }
 
     @Operation(

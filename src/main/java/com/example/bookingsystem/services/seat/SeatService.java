@@ -4,8 +4,10 @@ import com.example.bookingsystem.dto.seat.SeatDtoOut;
 import com.example.bookingsystem.entities.seat.SeatEntity;
 import com.example.bookingsystem.mappers.seat.SeatMapper;
 import com.example.bookingsystem.repositories.seat.SeatRepository;
+import com.example.bookingsystem.specifications.seat.SeatSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -81,20 +83,19 @@ public class SeatService {
     // search function
     public List<SeatDtoOut> getAllByFlightId(Long flightId, String classType, Boolean isNearExit,
                                              Boolean hasExtraLegroom, Integer seatNums) throws IllegalArgumentException {
-        List<SeatEntity> seats = seatRepository.findAllByFlightId(flightId);
-
         if (seatNums > 198) {
-            throw new IllegalArgumentException("Number of seats exceeds seats on plain " + flightId);
+            throw new IllegalArgumentException("Number of seats exceeds seats on plane " + flightId);
         }
 
-        return seats.stream()
-                .filter(seat -> classType == null || seat.getClassType().equalsIgnoreCase(classType))
-                .filter(seat -> isNearExit == null || seat.getIsNearExit().equals(isNearExit))
-                .filter(seat -> hasExtraLegroom == null || seat.getHasExtraLegroom().equals(hasExtraLegroom))
-                .filter(seat -> !seat.getIsReserved())
-                .limit(seatNums)
-                .map(seatMapper::toDto)
-                .toList();
+        Specification<SeatEntity> spec = Specification.where(SeatSpecification.getByFlightId(flightId)
+                .and(SeatSpecification.getByClassType(classType))
+                .and(SeatSpecification.getByIsNearExit(isNearExit))
+                .and(SeatSpecification.getByHasExtraLegroom(hasExtraLegroom))
+                .and(SeatSpecification.getByIsReserved(false)));
+
+        List<SeatEntity> seats = seatRepository.findAll(spec);
+
+        return seats.stream().limit(seatNums).map(seatMapper::toDto).toList();
     }
 
     public List<SeatDtoOut> getByFlightId(Long flightId) throws ChangeSetPersister.NotFoundException {

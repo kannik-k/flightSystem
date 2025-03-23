@@ -13,14 +13,14 @@ public class FlightSpecification {
                 flightNumber == null ? null : criteriaBuilder.equal(criteriaBuilder.lower(root.get("flightNumber")), flightNumber.toLowerCase()));
     }
 
-    public static Specification<FlightEntity> getByDepartureAirport(String airport) {
+    public static Specification<FlightEntity> getByDepartureAirport(String departureAirport) {
         return ((root, query, criteriaBuilder) ->
-                airport == null ? null : criteriaBuilder.like(criteriaBuilder.lower(root.get("airport")), "%" + airport.toLowerCase() + "%"));
+                departureAirport == null ? null : criteriaBuilder.like(criteriaBuilder.lower(root.get("departureAirport")), "%" + departureAirport.toLowerCase() + "%"));
     }
 
-    public static Specification<FlightEntity> getByArrivalAirport(String airport) {
+    public static Specification<FlightEntity> getByArrivalAirport(String arrivalAirport) {
         return ((root, query, criteriaBuilder) ->
-                airport == null ? null : criteriaBuilder.like(criteriaBuilder.lower(root.get("arrivalAirport")), "%" + airport.toLowerCase() + "%"));
+                arrivalAirport == null ? null : criteriaBuilder.like(criteriaBuilder.lower(root.get("arrivalAirport")), "%" + arrivalAirport.toLowerCase() + "%"));
     }
 
     public static Specification<FlightEntity> getByDepartureTime(LocalDateTime departureTime) {

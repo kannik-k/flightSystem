@@ -49,7 +49,7 @@ public class SeatController {
 
     @Operation(
             summary = "Get reserved seats",
-            description = "Get all randomly generated reserved seats by plane id."
+            description = "Get all randomly generated reserved seats by plane id. Mainly used for testing."
     )
     @ApiResponse(responseCode = "200", description = "Planes seats that are randomly generated have been retrieved from database successfully.")
     @GetMapping("reserved/{id}")

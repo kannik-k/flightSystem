@@ -28,8 +28,12 @@ public class FlightService {
 
     public FlightDtoOut addFlight(FlightDtoIn flightDtoIn) {
         FlightEntity flightEntity = flightMapper.toEntity(flightDtoIn);
+        if (flightEntity.getArrivalTime().isBefore(flightEntity.getDepartureTime())) {
+            flightEntity.setArrivalTime(flightEntity.getArrivalTime().plusDays(1));
+        }
         flightRepository.save(flightEntity);
         seatService.generateSeats(flightEntity.getFlightId());
+        seatService.randomSeatsBooked(flightEntity.getFlightId());
         return flightMapper.toDto(flightEntity);
     }
 
@@ -40,6 +44,10 @@ public class FlightService {
 
     public FlightPageResponse getFlights(String flightNumber, String departureAirport, String arrivalAirport,
                                          LocalDateTime departureTime, Double price, int page, int size) {
+        if (departureTime != null) {
+            departureTime = departureTime.toLocalDate().atStartOfDay();
+        }
+
         Specification<FlightEntity> specification = Specification
                 .where(FlightSpecification.getByFlightNumber(flightNumber))
                 .and(FlightSpecification.getByDepartureAirport(departureAirport))
