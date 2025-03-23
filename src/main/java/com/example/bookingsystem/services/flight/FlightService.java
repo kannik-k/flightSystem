@@ -28,7 +28,7 @@ public class FlightService {
 
     public FlightDtoOut addFlight(FlightDtoIn flightDtoIn) {
         FlightEntity flightEntity = flightMapper.toEntity(flightDtoIn);
-        if (flightEntity.getArrivalTime().isBefore(flightEntity.getDepartureTime())) {
+        if (flightEntity.getArrivalTime().isBefore(flightEntity.getDepartureTime()) || flightEntity.getArrivalTime().isEqual(flightEntity.getDepartureTime())) {
             flightEntity.setArrivalTime(flightEntity.getArrivalTime().plusDays(1));
         }
         flightRepository.save(flightEntity);
